@@ -60,7 +60,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: awxsa
-secrets:
+imagePullSecrets:
   - name: staging-secret
 ----
 

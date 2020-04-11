@@ -1,5 +1,5 @@
 
-== Launch Ansible Tower jobs and workflow from OpenShift Pipelines / Tekton
+== Launch Ansible Tower jobs and workflows from OpenShift Pipelines / Tekton
 
 ----
 Build the awx-cli container using buildah:

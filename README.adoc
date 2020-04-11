@@ -1,0 +1,89 @@
+
+
+----
+Build the awx-cli container using the buildah script at 
+----
+
+
+----
+buildah containers
+CONTAINER ID  BUILDER  IMAGE ID     IMAGE NAME                       CONTAINER NAME
+264060d4de76     *     91d23a64fdf2 registry.access.redhat.com/ub... ubi-minimal-working-container-3
+----
+
+----
+buildah commit ubi-minimal-working-container-3 ubiawx
+----
+
+----
+buildah images
+localhost/ubiawx
+----
+
+----
+podman  login -u="<quay user>" -p="<your quay token>" quay.io
+
+podman push localhost/ubiawx quay.io/marcf5/ubiawx
+----
+
+
+----
+oc create secret docker-registry staging-secret \
+    --docker-server=quay.io \
+    --docker-username=<quay user> \
+    --docker-password='<quay user token>' \
+    --docker-email='<quay user email>' \
+    --dry-run -o yaml > secret
+----
+
+----
+oc create -f secret
+----
+
+
+----
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: awxsa
+secrets:
+  - name: staging-secret
+----
+
+
+ oc create secret generic tower-creds \
+         --from-literal=username=admin \
+         --from-literal=password=password \
+         --type=kubernetes.io/basic-auth
+
+    oc create -f https://raw.githubusercontent.com/marcredhat/awxcli/master/ansible-tower-cli-task.yaml
+
+
+
+    apiVersion: tekton.dev/v1alpha1
+    kind: TaskRun
+    metadata:
+      name: awx-cli-taskrun
+      namespace: pipelines
+    spec:
+      taskRef:
+        name: ansible-awx-cli
+
+
+
+
+        params:
+                - name: HOST
+                  value: "https://dell-r730-001.dsal.lab.eng.bos.redhat.com/"
+                - name: USER
+                  value: "admin"
+                - name: PASS
+                  value: "password"
+
+
+
+podman run -it quay.io/marcf5/ubiawx /bin/bash
+'
+awx -k --conf.host "https://10.19.41.9"  --conf.username "admin" --conf.password "password" --conf.insecure
+
+awx -k --conf.host "https://10.19.41.9"  --conf.username "admin" --conf.password "password" --conf.insecure  workflow_job_templates launch "Workflow - Deploy and Register RHEL 8.1 KVM guests"

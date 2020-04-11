@@ -1,0 +1,50 @@
+apiVersion: v1
+items:
+- apiVersion: tekton.dev/v1alpha1
+  kind: TaskRun
+  metadata:
+    annotations:
+      tekton.dev/release: devel
+    creationTimestamp: "2020-04-11T04:41:42Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/managed-by: tekton-pipelines
+      tekton.dev/task: ansible-awx-cli
+    name: awx-cli-taskrun
+    namespace: pipelines
+    resourceVersion: "8641624"
+    selfLink: /apis/tekton.dev/v1alpha1/namespaces/pipelines/taskruns/awx-cli-taskrun
+    uid: 861d6476-1d9d-4820-9c10-758e35fc6f65
+  spec:
+    inputs: {}
+    outputs: {}
+    serviceAccountName: awxsa
+    taskRef:
+      kind: Task
+      name: ansible-awx-cli
+    timeout: 1h0m0s
+  status:
+    conditions:
+    - lastTransitionTime: "2020-04-11T04:47:08Z"
+      message: build step "step-config" is pending with reason "couldn't find key
+        USER in Secret pipelines/tower-creds"
+      reason: CreateContainerConfigError
+      status: Unknown
+      type: Succeeded
+    podName: awx-cli-taskrun-pod-ldml2
+    startTime: "2020-04-11T04:41:42Z"
+    steps:
+    - container: step-config
+      name: config
+      waiting:
+        message: couldn't find key USER in Secret pipelines/tower-creds
+        reason: CreateContainerConfigError
+    - container: step-awx-cli
+      imageID: quay.io/marcf5/ubiawx@sha256:ded3ce6fde5ccfa35dbf545c526b790708753f31c3135b21251acbce66b07185
+      name: awx-cli
+      running:
+        startedAt: "2020-04-11T04:41:49Z"
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

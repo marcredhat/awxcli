@@ -2,6 +2,12 @@
 == Launch Ansible Tower jobs and workflows from OpenShift Pipelines / Tekton
 
 ----
+Why Tekton?
+first-class Kubernetes integration
+efficiency - Tekton does parallel build tasks in separate containers
+----
+
+----
 Build the awx-cli container using buildah:
 ubicontainer=$(buildah from registry.access.redhat.com/ubi8/ubi-minimal:latest)
 export CONTAINER_FS=$(buildah mount)

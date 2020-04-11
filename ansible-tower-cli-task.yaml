@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ansible-awx-cli
+spec:
+  inputs:
+    params:
+      - name: SSLVERIFY
+        description: Disable tower ssl verification
+        default: "false"
+        type: string
+      - name: ARGS
+        description: The awx-cli commands to tun
+        type: array
+        default:
+          - "--help"
+      - name: HOST
+        description: The Ansible Tower host
+        type: string
+        default: ""
+      - name: tower-secret
+        description: The Ansible Tower secret with credentials
+        type: string
+        default: "tower-creds"
+  steps:
+    - name: config
+      image:  localhost/ubiawx:latest
+      command:
+        - '/bin/sh'
+        - '-c'
+      args:
+        - |-
+            echo -e "verify_ssl = $(inputs.params.SSLVERIFY)\nverbose = true\nhost = $(inputs.params.HOST)\nusername = $USER\npassword = $PASS" > ~/.awx_cli.cfg
+            chmod 600 ~/.awx_cli.cfg
+            echo "Generated awx_cli.cfg file"
+            echo "-----------------------------"
+            ls -lah ~/ | grep awx_cli
+            echo "-----------------------------"
+      env:
+        - name: USER
+          valueFrom:
+            secretKeyRef:
+              name: $(inputs.params.tower-secret)
+              key: USER
+        - name: PASS
+          valueFrom:
+            secretKeyRef:
+              name: $(inputs.params.tower-secret)
+              key: PASS
+    - name: awx-cli
+      image:  localhost/ubiawx:latest
+      command: ["/usr/bin/awx-cli"]
+      args:
+        - "$(inputs.params.ARGS)"
